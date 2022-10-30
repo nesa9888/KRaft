@@ -40,29 +40,6 @@
     mode: 0755
     remote_src: yes
 
-- name: Move all the files to parent Directory
-  become: yes
-  shell:
-    mv {{installation_dir}}/kafka_*/* {{installation_dir}}/.
-
-
-- name: Update the log path
-  become: yes
-  replace:
-    path: "{{installation_dir}}/config/server.properties"
-    regexp: 'log.dirs=(.+)'
-    replace: '/tmp/logs/kafka1'
-    backup: yes
-
-- name: Creates directory
-  become: yes
-  file:
-    path: '/tmp/logs/kafka1'
-    state: directory
-    owner: kafka
-    group: kafka
-    mode: 0777
-
 - name: Update the Java Heap Size for Kafka
   become: yes
   replace:
@@ -71,53 +48,12 @@
     replace: 'export KAFKA_HEAP_OPTS="-Xmx1024M -Xms1024M"'
     backup: yes
 
-- name: Install kafka service systemd unit file
-  template:
-    src: ../templates/confluent-service.j2
-    dest: /etc/systemd/system/confluent-server.service
-    owner: kafka
-    group: kafka
-    mode: 0644
-  notify: reload systemd
+- name: generate id for cluster
+  shell: "{{ installation_dir }}/bin/kafka-storage.sh random-uuid"
+  register: uuid_output
 
-- name: Render kafka service config file
-  template:
-    src: ../templates/server.properties.j2
-    dest: "{{ installation_dir }}/config/kraft/server.properties"
-    owner: kafka
-    group: kafka
-    mode: 0640
-    backup: yes
-  notify: restart kafka service
+- name: format storage directory
+  shell: "{{ installation_dir }}/bin/kafka-storage.sh format -t {{ uuid_output.stdout }} -c {{ installation_dir }}/config/kraft/server.properties"
 
-- name: Add kafka bin path to all users' PATH
-  template:
-    src: ../templates/kafka-path.j2
-    dest: /etc/profile.d/kafka_path.sh
-    owner: root
-    group: root
-    mode: 0644
-    seuser: system_u
-    serole: object_r
-    setype: bin_t
-    selevel: s0
-
-- name: Check if kraft logs dir has been initialized
-  shell: "{{ installation_dir }}/bin/kafka-storage.sh info -c {{ installation_dir }}/config/kraft/server.properties"
-  register: storage_init
-  ignore_errors: yes
-
-- name: start and enable kafka service service
-  systemd:
-    name: confluent-server
-    state: started
-    enabled: yes
-
-- name: Validating if Kafka is up and listening on port 9092
-  wait_for:
-    host: localhost
-    port: 9092
-    delay: 10
-    timeout: 30
-    state: started
-    msg: "Kafka not seem to be running"
+- name: launch broker
+  shell: "{{ installation_dir }}/bin/kafka-server-start.sh {{ installation_dir }}/config/kraft/server.properties"
