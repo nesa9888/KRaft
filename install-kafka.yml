@@ -2,14 +2,5 @@
 - name: Installing Kafka on Ubuntu
   hosts: all
   become: yes
-  vars: 
-    - kafka_version: 3.3.1
-    - scala_version: 2.13
-    - kafka_full_version: "kafka_{{scala_version}}-{{kafka_version}}"
-    - installation_dir : /opt/kafka
-    - kafka_dir: "/opt/kafka/{{ kafka_full_version }}"
-    - username: kafka
-    - download_url: "https://downloads.apache.org/kafka/{{kafka_version}}/{{ kafka_full_version }}.tgz"
-
   roles:
     - all_servers
