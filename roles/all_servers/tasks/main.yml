@@ -68,7 +68,7 @@
     dest: /etc/systemd/system/confluent-server.service
     owner: root
     group: root
-    mode: 0644
+    mode: 0777
   notify: reload systemd
 
 - name: Render kakfa service config file
