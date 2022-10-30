@@ -5,5 +5,5 @@
     - installation_dir : /opt/kafka
     - username: kafka
 
-    roles:
-      - all_servers
+  roles:
+    - all_servers
