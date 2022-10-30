@@ -40,3 +40,64 @@
   become: yes
   shell:
     mv {{installation_dir}}/kafka_*/* {{installation_dir}}/.
+
+
+- name: Update the log path
+  become: yes
+  become_user: kafka
+  replace:
+    path: "{{installation_dir}}/config/server.properties"
+    regexp: 'log.dirs=(.+)'
+    replace: 'log.dirs={{installation_dir}}/logs'
+    backup: yes
+
+- name: Update the Java Heap Size for Kafka
+  become: yes
+  become_user: kafka
+  replace:
+    path: "{{installation_dir}}/bin/kafka-server-start.sh"
+    regexp: 'export KAFKA_HEAP_OPTS=(".+")'
+    replace: 'export KAFKA_HEAP_OPTS="-Xmx1024M -Xms1024M"'
+    backup: yes
+
+- name: Install kafka service systemd unit file
+  template:
+    src: ../templates/confluent-server.service.j2
+    dest: /etc/systemd/system/confluent-server.service
+    owner: root
+    group: root
+    mode: 0644
+  notify: reload systemd
+
+- name: Render kakfa service config file
+  template:
+    src: ../templates/server.properties.j2
+    dest: "{{ installation_dir }}/latest/config/kraft/server.properties"
+    owner: kafka
+    group: kafka
+    mode: 0640
+    backup: yes
+  notify: restart kafka service
+
+- name: Add kafka bin path to all users' PATH
+  template:
+    src: ../templates/kafka_path.sh.j2
+    dest: /etc/profile.d/kafka_path.sh
+    owner: root
+    group: root
+    mode: 0644
+    seuser: system_u
+    serole: object_r
+    setype: bin_t
+    selevel: s0
+
+- name: Check if kraft logs dir has been initialized
+  shell: "{{ installation_dir }}/latest/bin/kafka-storage.sh info -c {{ installation_dir }}/latest/config/kraft/server.properties"
+  register: storage_init
+  ignore_errors: yes
+
+- name: start and enable kafka service service
+  systemd:
+    name: confluent-server
+    state: started
+    enabled: yes
