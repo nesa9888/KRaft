@@ -1,10 +1,10 @@
 - name: Install JRE after apt update
-      become: yes
-      apt:
-        name: 
-          - default-jre
-        state: present
-        update_cache: yes
+  become: yes
+  apt:
+    name: 
+      - default-jre
+    state: present
+    update_cache: yes
 
 - name: Create a group 
   become: yes
