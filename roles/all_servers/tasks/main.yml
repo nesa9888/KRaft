@@ -94,7 +94,7 @@
     selevel: s0
 
 - name: Check if kraft logs dir has been initialized
-  shell: "{{ installation_dir }}/latest/bin/kafka-storage.sh info -c {{ installation_dir }}/latest/config/kraft/server.properties"
+  shell: "{{ installation_dir }}/bin/kafka-storage.sh info -c {{ installation_dir }}/config/kraft/server.properties"
   register: storage_init
   ignore_errors: yes
 
