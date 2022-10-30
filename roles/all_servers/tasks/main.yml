@@ -54,14 +54,14 @@
     replace: '/tmp/logs/kafka1'
     backup: yes
 
-# - name: Creates directory
-#   become: yes
-#   file:
-#     path: '{{installation_dir}}/logs'
-#     state: directory
-#     owner: kafka
-#     group: kafka
-#     mode: 0777
+- name: Creates directory
+  become: yes
+  file:
+    path: '/tmp/logs/kafka1'
+    state: directory
+    owner: kafka
+    group: kafka
+    mode: 0777
 
 - name: Update the Java Heap Size for Kafka
   become: yes
