@@ -4,6 +4,7 @@
   become: yes
   vars: 
     - installation_dir : /opt/kafka
+    - kafka_dir: /opt/kafka/kafka_2.13-3.3.1
     - username: kafka
 
   roles:
