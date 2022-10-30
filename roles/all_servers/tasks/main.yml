@@ -19,9 +19,9 @@
     state: present
     group: kafka
 
-- name: Remove content from install directory
-  become: true
-  shell: "rm -r {{installation_dir}}/*"
+# - name: Remove content from install directory
+#   become: true
+#   shell: "rm -r {{installation_dir}}/*"
 
 - name: Create a Installation Directory 
   become: yes
@@ -35,7 +35,7 @@
 - name: Download Kafka and Unzip 
   become: yes
   unarchive:
-    src: https://downloads.apache.org/kafka/3.3.1/kafka_2.13-3.3.1.tgz
+    src: "{{download_url}}"
     dest: "{{installation_dir}}"
     mode: 0755
     remote_src: yes
@@ -57,6 +57,6 @@
   become: yes
   shell: "{{ kafka_dir }}/bin/kafka-storage.sh format -t {{ uuid_output.stdout }} -c {{ kafka_dir }}/config/kraft/server.properties"
 
-- name: launch broker
-  become: yes
-  shell: "{{ kafka_dir }}/bin/kafka-server-start.sh {{ kafka_dir }}/config/kraft/server.properties"
+# - name: launch broker
+#   become: yes
+#   shell: "{{ kafka_dir }}/bin/kafka-server-start.sh {{ kafka_dir }}/config/kraft/server.properties"
