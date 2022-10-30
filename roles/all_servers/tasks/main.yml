@@ -103,3 +103,12 @@
     name: confluent-server
     state: started
     enabled: yes
+
+- name: Validating if Kafka is up and listening on port 9092
+  wait_for:
+    host: localhost
+    port: 9092
+    delay: 10
+    timeout: 30
+    state: started
+    msg: "Kafka not seem to be running"
