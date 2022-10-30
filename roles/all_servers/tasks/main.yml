@@ -43,20 +43,20 @@
 - name: Update the Java Heap Size for Kafka
   become: yes
   replace:
-    path: "{{installation_dir}}/bin/kafka-server-start.sh"
+    path: "{{ kafka_dir }}/bin/kafka-server-start.sh"
     regexp: 'export KAFKA_HEAP_OPTS=(".+")'
     replace: 'export KAFKA_HEAP_OPTS="-Xmx1024M -Xms1024M"'
     backup: yes
 
 - name: generate id for cluster
   become: yes
-  shell: "{{ installation_dir }}/bin/kafka-storage.sh random-uuid"
+  shell: "{{ kafka_dir }}/bin/kafka-storage.sh random-uuid"
   register: uuid_output
 
 - name: format storage directory
   become: yes
-  shell: "{{ installation_dir }}/bin/kafka-storage.sh format -t {{ uuid_output.stdout }} -c {{ installation_dir }}/config/kraft/server.properties"
+  shell: "{{ kafka_dir }}/bin/kafka-storage.sh format -t {{ uuid_output.stdout }} -c {{ kafka_dir }}/config/kraft/server.properties"
 
 - name: launch broker
   become: yes
-  shell: "{{ installation_dir }}/bin/kafka-server-start.sh {{ installation_dir }}/config/kraft/server.properties"
+  shell: "{{ kafka_dir }}/bin/kafka-server-start.sh {{ kafka_dir }}/config/kraft/server.properties"
