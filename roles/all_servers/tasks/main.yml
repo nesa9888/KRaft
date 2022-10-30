@@ -48,7 +48,6 @@
 
 - name: Update the log path
   become: yes
-  become_user: kafka
   replace:
     path: "{{installation_dir}}/config/server.properties"
     regexp: 'log.dirs=(.+)'
@@ -57,7 +56,6 @@
 
 - name: Update the Java Heap Size for Kafka
   become: yes
-  become_user: kafka
   replace:
     path: "{{installation_dir}}/bin/kafka-server-start.sh"
     regexp: 'export KAFKA_HEAP_OPTS=(".+")'
