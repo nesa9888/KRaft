@@ -19,6 +19,10 @@
     state: present
     group: kafka
 
+- name: Remove content from install directory
+  become: true
+  shell: "rm -r {{installation_dir}}/*"
+
 - name: Create a Installation Directory 
   become: yes
   file:
