@@ -49,11 +49,14 @@
     backup: yes
 
 - name: generate id for cluster
+  become: yes
   shell: "{{ installation_dir }}/bin/kafka-storage.sh random-uuid"
   register: uuid_output
 
 - name: format storage directory
+  become: yes
   shell: "{{ installation_dir }}/bin/kafka-storage.sh format -t {{ uuid_output.stdout }} -c {{ installation_dir }}/config/kraft/server.properties"
 
 - name: launch broker
+  become: yes
   shell: "{{ installation_dir }}/bin/kafka-server-start.sh {{ installation_dir }}/config/kraft/server.properties"
