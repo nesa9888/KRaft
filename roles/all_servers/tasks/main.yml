@@ -66,8 +66,8 @@
   template:
     src: ../templates/confluent-service.j2
     dest: /etc/systemd/system/confluent-server.service
-    owner: root
-    group: root
+    owner: kafka
+    group: kafka
     mode: 0777
   notify: reload systemd
 
